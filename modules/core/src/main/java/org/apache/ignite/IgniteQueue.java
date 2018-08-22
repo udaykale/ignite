@@ -18,8 +18,11 @@
 package org.apache.ignite;
 
 import java.io.Closeable;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.apache.ignite.lang.IgniteCallable;
@@ -29,46 +32,40 @@ import org.apache.ignite.lang.IgniteRunnable;
  * This interface provides a rich API for working with distributed queues based on In-Memory Data Grid.
  * <p>
  * <h1 class="header">Overview</h1>
- * Cache queue provides an access to cache elements using typical queue API. Cache queue also implements
- * {@link Collection} interface and provides all methods from collections including
- * {@link Collection#addAll(Collection)}, {@link Collection#removeAll(Collection)}, and
- * {@link Collection#retainAll(Collection)} methods for bulk operations. Note that all
- * {@link Collection} methods in the queue may throw {@link IgniteException} in case
- * of failure.
+ * Cache queue provides an access to cache elements using typical queue API. Cache queue also implements {@link
+ * Collection} interface and provides all methods from collections including {@link Collection#addAll(Collection)},
+ * {@link Collection#removeAll(Collection)}, and {@link Collection#retainAll(Collection)} methods for bulk operations.
+ * Note that all {@link Collection} methods in the queue may throw {@link IgniteException} in case of failure.
  * <p>
  * <h1 class="header">Bounded vs Unbounded</h1>
- * Queues can be {@code unbounded} or {@code bounded}. {@code Bounded} queues can
- * have maximum capacity. Queue capacity can be set at creation time and cannot be
- * changed later. Here is an example of how to create {@code bounded} {@code LIFO} queue with
- * capacity of {@code 1000} items.
+ * Queues can be {@code unbounded} or {@code bounded}. {@code Bounded} queues can have maximum capacity. Queue capacity
+ * can be set at creation time and cannot be changed later. Here is an example of how to create {@code bounded} {@code
+ * LIFO} queue with capacity of {@code 1000} items.
  * <pre name="code" class="java">
  * IgniteQueue&lt;String&gt; queue = cache().queue("anyName", LIFO, 1000);
  * ...
  * queue.add("item");
  * </pre>
- * For {@code bounded} queues <b>blocking</b> operations, such as {@link #take()} or {@link #put(Object)}
- * are available. These operations will block until queue capacity changes to make the operation
- * possible.
+ * For {@code bounded} queues <b>blocking</b> operations, such as {@link #take()} or {@link #put(Object)} are available.
+ * These operations will block until queue capacity changes to make the operation possible.
  * <h1 class="header">Collocated vs Non-collocated</h1>
- * Queue items can be placed on one node or distributed throughout grid nodes
- * (governed by {@code collocated} parameter). {@code Non-collocated} mode is provided only
- * for partitioned caches. If {@code collocated} parameter is {@code true}, then all queue items
- * will be collocated on one node, otherwise items will be distributed through all grid nodes.
- * Unless explicitly specified, by default queues are {@code collocated}.
+ * Queue items can be placed on one node or distributed throughout grid nodes (governed by {@code collocated}
+ * parameter). {@code Non-collocated} mode is provided only for partitioned caches. If {@code collocated} parameter is
+ * {@code true}, then all queue items will be collocated on one node, otherwise items will be distributed through all
+ * grid nodes. Unless explicitly specified, by default queues are {@code collocated}.
  * <p>
- * Here is an example of how create {@code unbounded} queue
- * in non-collocated mode.
+ * Here is an example of how create {@code unbounded} queue in non-collocated mode.
  * <pre name="code" class="java">
  * IgniteQueue&lt;String&gt; queue = cache().queue("anyName", 0 &#047;*unbounded*&#047;, false &#047;*non-collocated*&#047;);
  * ...
  * queue.add("item");
  * </pre>
  * <h1 class="header">Creating Cache Queues</h1>
- * Instances of distributed cache queues can be created by calling the following method
- * on {@link Ignite} API:
+ * Instances of distributed cache queues can be created by calling the following method on {@link Ignite} API:
  * <ul>
- *     <li>{@link Ignite#queue(String, int, org.apache.ignite.configuration.CollectionConfiguration)}</li>
+ * <li>{@link Ignite#queue(String, int, org.apache.ignite.configuration.CollectionConfiguration)}</li>
  * </ul>
+ *
  * @see Ignite#queue(String, int, org.apache.ignite.configuration.CollectionConfiguration)
  */
 public interface IgniteQueue<T> extends BlockingQueue<T>, Closeable {
@@ -169,8 +166,8 @@ public interface IgniteQueue<T> extends BlockingQueue<T>, Closeable {
     public boolean bounded();
 
     /**
-     * Returns {@code true} if this queue can be kept on the one node only.
-     * Returns {@code false} if this queue can be kept on the many nodes.
+     * Returns {@code true} if this queue can be kept on the one node only. Returns {@code false} if this queue can be
+     * kept on the many nodes.
      *
      * @return {@code true} if this queue is in {@code collocated} mode {@code false} otherwise.
      */
@@ -184,8 +181,7 @@ public interface IgniteQueue<T> extends BlockingQueue<T>, Closeable {
     public boolean removed();
 
     /**
-     * Executes given job on collocated queue on the node where the queue is located
-     * (a.k.a. affinity co-location).
+     * Executes given job on collocated queue on the node where the queue is located (a.k.a. affinity co-location).
      * <p>
      * This is not supported for non-collocated queues.
      *
@@ -195,8 +191,7 @@ public interface IgniteQueue<T> extends BlockingQueue<T>, Closeable {
     public void affinityRun(IgniteRunnable job) throws IgniteException;
 
     /**
-     * Executes given job on collocated queue on the node where the queue is located
-     * (a.k.a. affinity co-location).
+     * Executes given job on collocated queue on the node where the queue is located (a.k.a. affinity co-location).
      * <p>
      * This is not supported for non-collocated queues.
      *
@@ -204,4 +199,40 @@ public interface IgniteQueue<T> extends BlockingQueue<T>, Closeable {
      * @throws IgniteException If job failed.
      */
     public <R> R affinityCall(IgniteCallable<R> job) throws IgniteException;
+
+    /**
+     * Returns queue that will operate with binary objects.
+     * <p>
+     * Queue returned by this method will not be forced to deserialize binary objects, so keys and values will be
+     * returned from cache API methods without changes. Therefore, signature of the cache can contain only following
+     * types:
+     * <ul>
+     * <li><code>org.apache.ignite.binary.BinaryObject</code> for binary classes</li>
+     * <li>All primitives (byte, int, ...) and there boxed versions (Byte, Integer, ...)</li>
+     * <li>Arrays of primitives (byte[], int[], ...)</li>
+     * <li>{@link String} and array of {@link String}s</li>
+     * <li>{@link UUID} and array of {@link UUID}s</li>
+     * <li>{@link Date} and array of {@link Date}s</li>
+     * <li>{@link Timestamp} and array of {@link Timestamp}s</li>
+     * <li>Enums and array of enums</li>
+     * <li>
+     * Maps, collections and array of objects (but objects inside them will still be converted if they are binary)
+     * </li>
+     * </ul>
+     * <p>
+     * For example, if you use {@link Integer} as a key and {@code Value} class as a value (which will be stored in
+     * binary format), you should acquire following projection to avoid deserialization:
+     * <pre>
+     * IgniteCache<Integer, BinaryObject> prj = cache.withKeepBinary();
+     *
+     * // Value is not deserialized and returned in binary format.
+     * BinaryObject po = prj.get(1);
+     * </pre>
+     * <p>
+     * Note that this method makes sense only if cache is working in binary mode if default marshaller is used. If not,
+     * this method is no-op and will return current cache.
+     *
+     * @return New cache instance for binary objects.
+     */
+    public <V1> IgniteQueue<V1> withKeepBinary();
 }

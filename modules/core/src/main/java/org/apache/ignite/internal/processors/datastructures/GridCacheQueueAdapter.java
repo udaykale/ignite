@@ -423,6 +423,11 @@ public abstract class GridCacheQueueAdapter<T> extends AbstractCollection<T> imp
         return compute.affinityCall(cache.name(), queueKey, job);
     }
 
+    /** {@inheritDoc} */
+    @Override public <V1> IgniteQueue<V1> withKeepBinary() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param cache Queue cache.
      * @param id Queue unique ID.
@@ -816,7 +821,8 @@ public abstract class GridCacheQueueAdapter<T> extends AbstractCollection<T> imp
                 }
 
                 next++;
-            } while (next != hdr.tail());
+            }
+            while (next != hdr.tail());
 
             GridCacheQueueHeader newHdr = new GridCacheQueueHeader(hdr.id(),
                 hdr.capacity(),

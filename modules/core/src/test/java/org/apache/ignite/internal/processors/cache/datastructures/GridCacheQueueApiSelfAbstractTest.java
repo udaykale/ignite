@@ -26,10 +26,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteBinary;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.IgniteQueue;
+import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.cache.CacheMode;
+import org.apache.ignite.client.Person;
 import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.CollectionConfiguration;
@@ -99,6 +102,34 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
      *
      * @throws Exception If failed.
      */
+    public void testPrepareQueueBinary() throws Exception {
+        // Random sequence names.
+        String queueName1 = UUID.randomUUID().toString();
+        String queueName2 = UUID.randomUUID().toString();
+
+        CollectionConfiguration colCfg = config(false);
+
+        IgniteQueue queue1 = grid(0).queue(queueName1, 0, colCfg).withKeepBinary();
+        IgniteQueue queue2 = grid(0).queue(queueName2, 0, colCfg).withKeepBinary();
+        IgniteQueue queue3 = grid(0).queue(queueName1, 0, colCfg).withKeepBinary();
+
+        assertNotNull(queue1);
+        assertNotNull(queue2);
+        assertNotNull(queue3);
+        assert queue1.equals(queue3);
+        assert queue3.equals(queue1);
+        assert !queue3.equals(queue2);
+
+        queue1.close();
+        queue2.close();
+        queue3.close();
+    }
+
+    /**
+     * JUnit.
+     *
+     * @throws Exception If failed.
+     */
     public void testAddUnbounded() throws Exception {
         // Random queue name.
         String queueName = UUID.randomUUID().toString();
@@ -117,6 +148,32 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
      *
      * @throws Exception If failed.
      */
+    public void testAddUnboundedBinary() throws Exception {
+        // Random queue name.
+        String queueName = UUID.randomUUID().toString();
+
+        Person val = new Person(1, "Joe");
+
+        IgniteQueue<Person> queue = grid(0).queue(queueName, 0, config(false));
+
+        assert queue.add(val);
+
+        IgniteQueue<BinaryObject> binaryQueue = queue.withKeepBinary();
+
+        BinaryObject binVal = binaryQueue.poll();
+
+        assert binVal != null;
+
+        assert val.getId().equals(binVal.field("id"));
+
+        assert val.getName().equals(binVal.field("name"));
+    }
+
+    /**
+     * JUnit.
+     *
+     * @throws Exception If failed.
+     */
     public void testAddDeleteUnbounded() throws Exception {
         // Random queue name.
         String queueName = UUID.randomUUID().toString();
@@ -128,6 +185,35 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
         assert queue.add(val);
 
         assert queue.remove(val);
+
+        assert queue.isEmpty();
+    }
+
+    /**
+     * JUnit.
+     *
+     * @throws Exception If failed.
+     */
+    public void testAddDeleteUnboundedBinary() throws Exception {
+        // Random queue name.
+        String queueName = UUID.randomUUID().toString();
+
+        Person val = new Person(1, "Joe");
+
+        IgniteQueue<Person> queue = grid(0).queue(queueName, 0, config(false));
+
+        assert queue.add(val);
+
+        IgniteQueue<BinaryObject> binaryQueue = queue.withKeepBinary();
+
+        IgniteBinary binary = grid(0).binary();
+
+        BinaryObject binVal = binary.builder(binary.type(Person.class).typeName())
+            .setField("id", 1, int.class)
+            .setField("name", "Joe", String.class)
+            .build();
+
+        assert binaryQueue.remove(binVal);
 
         assert queue.isEmpty();
     }
@@ -213,6 +299,94 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
      *
      * @throws Exception If failed.
      */
+    public void testCollectionMethodsBinary() throws Exception {
+        // Random queue name.
+        String queueName = UUID.randomUUID().toString();
+
+        IgniteQueue<SameHashItem> queue = grid(0).queue(queueName, 0, config(false)).withKeepBinary();
+        IgniteQueue<BinaryObject> queueBinary = grid(0).queue(queueName, 0, config(false)).withKeepBinary();
+
+        int retries = 100;
+
+        IgniteBinary igniteBinary = grid(0).binary();
+
+        // Initialize queue.
+        for (int i = 0; i < retries; i++) {
+            queue.addAll(Arrays.asList(new SameHashItem(Integer.toString(i)), new SameHashItem(Integer.toString(i))));
+
+            BinaryObject binObj1 = igniteBinary.builder(SameHashItem.class.getTypeName())
+                .setField("s", Integer.toString(i)).build();
+            BinaryObject binObj2 = igniteBinary.builder(SameHashItem.class.getTypeName())
+                .setField("s", Integer.toString(i)).build();
+
+            queueBinary.addAll(Arrays.asList(binObj1, binObj2));
+        }
+
+        // Get arrays from queue.
+        assertEquals(retries * 4, queue.toArray().length);
+        assertEquals(retries * 4, queueBinary.toArray().length);
+
+        BinaryObject[] arr2 = new BinaryObject[retries * 5];
+
+        Object[] arr3 = queue.toArray(arr2);
+
+        assertEquals(arr2, arr3);
+        assertEquals(arr3[0], igniteBinary.toBinary(new SameHashItem("0")));
+
+        // Check queue items.
+        assertEquals(retries * 4, queue.size());
+
+        assertTrue(queue.contains(new SameHashItem(Integer.toString(14))));
+
+        assertFalse(queue.contains(new SameHashItem(Integer.toString(144))));
+
+        Collection<SameHashItem> col1 = Arrays.asList(new SameHashItem(Integer.toString(14)),
+            new SameHashItem(Integer.toString(14)), new SameHashItem(Integer.toString(18)));
+
+        assertTrue(queue.containsAll(col1));
+
+        Collection<SameHashItem> col2 = Arrays.asList(new SameHashItem(Integer.toString(245)),
+            new SameHashItem(Integer.toString(14)), new SameHashItem(Integer.toString(18)));
+
+        assertFalse(queue.containsAll(col2));
+
+        // Try to remove item.
+        assertTrue(queue.remove(new SameHashItem(Integer.toString(14))));
+
+        assertEquals((retries * 2) - 1, queue.size());
+
+        assertTrue(queue.contains(new SameHashItem(Integer.toString(14))));
+
+        assertTrue(queue.remove(new SameHashItem(Integer.toString(14))));
+
+        assertEquals((retries - 1) * 2, queue.size());
+
+        assertFalse(queue.remove(new SameHashItem(Integer.toString(14))));
+
+        // Try to remove some items.
+        assertTrue(queue.contains(new SameHashItem(Integer.toString(33))));
+
+        assertTrue(queue.removeAll(Arrays.asList(new SameHashItem(Integer.toString(15)),
+            new SameHashItem(Integer.toString(14)), new SameHashItem(Integer.toString(33)),
+            new SameHashItem(Integer.toString(1)))));
+
+        assertFalse(queue.contains(new SameHashItem(Integer.toString(33))));
+
+        // Try to retain all items.
+        assertTrue(queue.retainAll(Arrays.asList(new SameHashItem(Integer.toString(15)),
+            new SameHashItem(Integer.toString(14)), new SameHashItem(Integer.toString(33)),
+            new SameHashItem(Integer.toString(1)))));
+
+        assertFalse(queue.contains(new SameHashItem(Integer.toString(2))));
+
+        assert queue.isEmpty();
+    }
+
+    /**
+     * JUnit.
+     *
+     * @throws Exception If failed.
+     */
     public void testAddPollUnbounded() throws Exception {
         // Random queue name.
         String queueName = UUID.randomUUID().toString();
@@ -228,6 +402,38 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
         assertEquals("1", queue.poll());
         assertEquals("2", queue.poll());
         assertEquals("3", queue.poll());
+    }
+
+    /**
+     * JUnit.
+     *
+     * @throws Exception If failed.
+     */
+    public void testAddPollUnboundedBinary() throws Exception {
+        // Random queue name.
+        String queueName = UUID.randomUUID().toString();
+
+        IgniteQueue<BinaryObject> queue = grid(0).queue(queueName, 0, config(false)).withKeepBinary();
+
+        IgniteBinary binary = grid(0).binary();
+
+        assert queue.add(binary.builder(SameHashItem.class.getTypeName()).setField("s", "1").build());
+
+        assert queue.add(binary.builder(SameHashItem.class.getTypeName()).setField("s", "2").build());
+
+        assert queue.add(binary.builder(SameHashItem.class.getTypeName()).setField("s", "3").build());
+
+        BinaryObject pollVal = queue.poll();
+        assert pollVal != null;
+        assertEquals("1", pollVal.field("s"));
+
+        pollVal = queue.poll();
+        assert pollVal != null;
+        assertEquals("2", pollVal.field("s"));
+
+        pollVal = queue.poll();
+        assert pollVal != null;
+        assertEquals("3", pollVal.field("s"));
     }
 
     /**
@@ -357,18 +563,18 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
         final IgniteQueue<String> queue = grid(0).queue(queueName, QUEUE_CAPACITY, config(false));
 
         multithreaded(new Callable<Void>() {
-                @Override public Void call() throws Exception {
-                    String thName = Thread.currentThread().getName();
+            @Override public Void call() throws Exception {
+                String thName = Thread.currentThread().getName();
 
-                    for (int i = 0; i < 5; i++) {
-                        queue.put(thName);
-                        queue.peek();
-                        queue.take();
-                    }
-
-                    return null;
+                for (int i = 0; i < 5; i++) {
+                    queue.put(thName);
+                    queue.peek();
+                    queue.take();
                 }
-            }, THREAD_NUM);
+
+                return null;
+            }
+        }, THREAD_NUM);
 
         assert queue.isEmpty() : queue.size();
     }
@@ -385,17 +591,17 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
         final IgniteQueue<String> queue = grid(0).queue(queueName, QUEUE_CAPACITY, config(false));
 
         multithreaded(new Callable<String>() {
-                @Override public String call() throws Exception {
-                    String thName = Thread.currentThread().getName();
+            @Override public String call() throws Exception {
+                String thName = Thread.currentThread().getName();
 
-                    for (int i = 0; i < QUEUE_CAPACITY * 5; i++) {
-                        queue.put(thName);
-                        queue.peek();
-                        queue.take();
-                    }
-                    return "";
+                for (int i = 0; i < QUEUE_CAPACITY * 5; i++) {
+                    queue.put(thName);
+                    queue.peek();
+                    queue.take();
                 }
-            }, THREAD_NUM);
+                return "";
+            }
+        }, THREAD_NUM);
 
         assert queue.isEmpty() : queue.size();
     }
@@ -783,8 +989,8 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
     }
 
     /**
-     * Implementation of ignite data structures internally uses special system caches, need make sure
-     * that transaction on these system caches do not intersect with transactions started by user.
+     * Implementation of ignite data structures internally uses special system caches, need make sure that transaction
+     * on these system caches do not intersect with transactions started by user.
      *
      * @throws Exception If failed.
      */
@@ -940,10 +1146,10 @@ public abstract class GridCacheQueueApiSelfAbstractTest extends IgniteCollection
     }
 
     /**
-     *  Test class with the same hash code.
+     * Test class with the same hash code.
      */
     private static class SameHashItem implements Serializable {
-        /** Data field*/
+        /** Data field */
         private final String s;
 
         /**

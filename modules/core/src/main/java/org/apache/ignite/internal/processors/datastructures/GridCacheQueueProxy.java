@@ -25,10 +25,13 @@ import java.io.ObjectOutput;
 import java.io.ObjectStreamException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteQueue;
 import org.apache.ignite.internal.GridKernalContext;
+import org.apache.ignite.internal.processors.cache.CacheOperationContext;
 import org.apache.ignite.internal.processors.cache.GridCacheContext;
 import org.apache.ignite.internal.processors.cache.GridCacheGateway;
 import org.apache.ignite.internal.util.typedef.T3;
@@ -36,6 +39,8 @@ import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteCallable;
 import org.apache.ignite.lang.IgniteRunnable;
 import org.jetbrains.annotations.Nullable;
+
+import static org.apache.ignite.internal.processors.cache.CacheOperationContext.DFLT_ALLOW_ATOMIC_OPS_IN_TX;
 
 /**
  * Cache queue proxy.
@@ -128,7 +133,12 @@ public class GridCacheQueueProxy<T> implements IgniteQueue<T>, Externalizable {
         gate.enter();
 
         try {
-            return delegate.contains(item);
+            CacheOperationContext opCtx = cctx.operationContextPerCall();
+
+            if (opCtx != null && opCtx.isKeepBinary())
+                return delegate.contains(cctx.cacheObjects().binary().toBinary(item));
+            else
+                return delegate.contains(item);
         }
         finally {
             gate.leave();
@@ -140,6 +150,11 @@ public class GridCacheQueueProxy<T> implements IgniteQueue<T>, Externalizable {
         gate.enter();
 
         try {
+            CacheOperationContext opCtx = cctx.operationContextPerCall();
+
+            if (opCtx != null && opCtx.isKeepBinary())
+                return delegate.containsAll(convertToBinary(items));
+
             return delegate.containsAll(items);
         }
         finally {
@@ -165,6 +180,11 @@ public class GridCacheQueueProxy<T> implements IgniteQueue<T>, Externalizable {
         gate.enter();
 
         try {
+            CacheOperationContext opCtx = cctx.operationContextPerCall();
+
+            if (opCtx != null && opCtx.isKeepBinary())
+                return delegate.remove(cctx.cacheObjects().binary().toBinary(item));
+
             return delegate.remove(item);
         }
         finally {
@@ -177,6 +197,11 @@ public class GridCacheQueueProxy<T> implements IgniteQueue<T>, Externalizable {
         gate.enter();
 
         try {
+            CacheOperationContext opCtx = cctx.operationContextPerCall();
+
+            if (opCtx != null && opCtx.isKeepBinary())
+                return delegate.removeAll(convertToBinary(items));
+
             return delegate.removeAll(items);
         }
         finally {
@@ -231,6 +256,19 @@ public class GridCacheQueueProxy<T> implements IgniteQueue<T>, Externalizable {
         finally {
             gate.leave();
         }
+    }
+
+    /**
+     * Converts query arguments to BinaryObjects if binary marshaller used.
+     *
+     * @param items Arguments.
+     */
+    private List<Object> convertToBinary(final Collection<?> items) {
+        if (items == null)
+            return null;
+
+        return items.stream().map(item -> cctx.cacheObjects().binary().toBinary(item))
+            .collect(Collectors.toList());
     }
 
     /** {@inheritDoc} */
@@ -446,6 +484,20 @@ public class GridCacheQueueProxy<T> implements IgniteQueue<T>, Externalizable {
     /** {@inheritDoc} */
     @Override public <R> R affinityCall(final IgniteCallable<R> job) {
         return delegate.affinityCall(job);
+    }
+
+    /** {@inheritDoc} */
+    @Override public <V1> IgniteQueue<V1> withKeepBinary() {
+        CacheOperationContext opCtx = cctx.operationContextPerCall();
+
+        if (opCtx != null && opCtx.isKeepBinary())
+            return (GridCacheQueueProxy<V1>)this;
+        else {
+            opCtx = new CacheOperationContext(cctx.skipStore(), null, true, cctx.expiry(), false,
+                cctx.dataCenterId(), false, DFLT_ALLOW_ATOMIC_OPS_IN_TX);
+            cctx.operationContextPerCall(opCtx);
+            return new GridCacheQueueProxy<>(cctx, (GridCacheQueueAdapter<V1>)delegate);
+        }
     }
 
     /** {@inheritDoc} */
