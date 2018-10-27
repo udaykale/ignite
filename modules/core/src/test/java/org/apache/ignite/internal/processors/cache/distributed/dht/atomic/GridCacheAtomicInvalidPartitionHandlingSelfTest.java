@@ -77,7 +77,7 @@ public class GridCacheAtomicInvalidPartitionHandlingSelfTest extends GridCommonA
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(IP_FINDER).setForceServerMode(true));
+        cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(IP_FINDER));
 
         CacheConfiguration ccfg = cacheConfiguration();
 

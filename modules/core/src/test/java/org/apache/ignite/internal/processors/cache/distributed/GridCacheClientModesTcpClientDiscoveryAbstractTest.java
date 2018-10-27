@@ -38,11 +38,7 @@ public abstract class GridCacheClientModesTcpClientDiscoveryAbstractTest extends
 
     /** {@inheritDoc} */
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
-        IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
-
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(false);
-
-        return cfg;
+        return super.getConfiguration(igniteInstanceName);
     }
 
     /** */

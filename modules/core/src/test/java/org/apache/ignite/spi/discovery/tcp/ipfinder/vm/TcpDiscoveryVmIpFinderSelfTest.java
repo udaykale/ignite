@@ -261,7 +261,6 @@ public class TcpDiscoveryVmIpFinderSelfTest
 
         TcpDiscoverySpi disco = new TcpDiscoverySpi();
 
-        disco.setForceServerMode(forceServerMode);
         disco.setIpFinder(IP_FINDER);
 
         cfg.setDiscoverySpi(disco);

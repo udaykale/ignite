@@ -86,8 +86,6 @@ public class GridCacheClientNodeBinaryObjectMetadataTest extends GridCacheAbstra
 
         cfg.setMarshaller(marsh);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
         return cfg;
     }
 

@@ -73,7 +73,6 @@ public class GridCacheNearOnlyTopologySelfTest extends GridCommonAbstractTest {
 
         TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
 
-        discoSpi.setForceServerMode(true);
         discoSpi.setIpFinder(IP_FINDER);
 
         cfg.setDiscoverySpi(discoSpi);

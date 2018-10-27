@@ -57,7 +57,7 @@ public class GridCacheMixedPartitionExchangeSelfTest extends GridCommonAbstractT
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder).setForceServerMode(true);
+        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder);
 
         if (cache)
             cfg.setCacheConfiguration(cacheConfiguration());

@@ -106,11 +106,8 @@ public class IgniteDynamicCacheStartSelfTest extends GridCommonAbstractTest {
 
         ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder);
 
-        if (client) {
+        if (client)
             cfg.setClientMode(true);
-
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-        }
 
         cfg.setUserAttributes(F.asMap(TEST_ATTRIBUTE_NAME, testAttribute));
 

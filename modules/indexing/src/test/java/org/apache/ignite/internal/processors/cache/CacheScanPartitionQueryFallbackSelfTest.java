@@ -103,7 +103,6 @@ public class CacheScanPartitionQueryFallbackSelfTest extends GridCommonAbstractT
 
         TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
         discoSpi.setIpFinder(IP_FINDER);
-        discoSpi.setForceServerMode(true);
         cfg.setDiscoverySpi(discoSpi);
 
         cfg.setCommunicationSpi(commSpiFactory.create());

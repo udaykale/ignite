@@ -61,7 +61,7 @@ public class GridCacheClientNodeBinaryObjectMetadataMultinodeTest extends GridCo
 
         cfg.setPeerClassLoadingEnabled(false);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder).setForceServerMode(true);
+        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder);
 
         cfg.setMarshaller(new BinaryMarshaller());
 

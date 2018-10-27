@@ -104,7 +104,7 @@ public abstract class TcpDiscoveryIpFinderAdapter implements TcpDiscoveryIpFinde
             if (!(discoSpi instanceof TcpDiscoverySpi))
                 throw new IgniteSpiException("TcpDiscoveryIpFinder should be used with TcpDiscoverySpi: " + discoSpi);
 
-            clientMode = ignite0.configuration().isClientMode() && !((TcpDiscoverySpi)discoSpi).isForceServerMode();
+            clientMode = ignite0.configuration().isClientMode();
         }
         else
             clientMode = false;

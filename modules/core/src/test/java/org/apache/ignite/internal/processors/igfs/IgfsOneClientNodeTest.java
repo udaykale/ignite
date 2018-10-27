@@ -50,7 +50,6 @@ public class IgfsOneClientNodeTest extends GridCommonAbstractTest {
         cfg.setClientMode(true);
 
         cfg.setDiscoverySpi(new TcpDiscoverySpi()
-            .setForceServerMode(true)
             .setIpFinder(new TcpDiscoveryVmIpFinder(true)));
 
         FileSystemConfiguration igfsCfg = new FileSystemConfiguration();

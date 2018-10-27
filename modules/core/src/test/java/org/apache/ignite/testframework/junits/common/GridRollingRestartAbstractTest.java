@@ -89,8 +89,6 @@ public abstract class GridRollingRestartAbstractTest extends GridCommonAbstractT
             cfg.setClientMode(true);
 
             assert cfg.getDiscoverySpi() instanceof TcpDiscoverySpi;
-
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
         }
 
         cfg.setCacheConfiguration(getCacheConfiguration());

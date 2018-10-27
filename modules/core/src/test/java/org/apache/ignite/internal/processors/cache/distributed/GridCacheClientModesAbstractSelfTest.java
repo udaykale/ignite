@@ -71,8 +71,6 @@ public abstract class GridCacheClientModesAbstractSelfTest extends GridCacheAbst
             nearOnlyIgniteInstanceName = igniteInstanceName;
         }
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
         return cfg;
     }
 

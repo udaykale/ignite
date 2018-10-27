@@ -2211,7 +2211,6 @@ public class IgniteConfiguration {
      * {@link DiscoverySpi} in client mode if this property is {@code true}.
      *
      * @return Client mode flag.
-     * @see TcpDiscoverySpi#setForceServerMode(boolean)
      */
     public Boolean isClientMode() {
         return clientMode;

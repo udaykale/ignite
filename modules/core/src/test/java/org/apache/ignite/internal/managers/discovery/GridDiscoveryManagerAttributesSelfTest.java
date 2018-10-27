@@ -444,11 +444,7 @@ public abstract class GridDiscoveryManagerAttributesSelfTest extends GridCommonA
     public static class RegularDiscovery extends GridDiscoveryManagerAttributesSelfTest {
         /** {@inheritDoc} */
         @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
-            IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
-
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
-            return cfg;
+            return super.getConfiguration(igniteInstanceName);
         }
     }
 

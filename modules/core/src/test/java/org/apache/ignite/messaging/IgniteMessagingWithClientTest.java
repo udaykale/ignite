@@ -56,11 +56,8 @@ public class IgniteMessagingWithClientTest extends GridCommonAbstractTest implem
 
         cfg.setMarshaller(new BinaryMarshaller());
 
-        if (igniteInstanceName.equals(getTestIgniteInstanceName(2))) {
+        if (igniteInstanceName.equals(getTestIgniteInstanceName(2)))
             cfg.setClientMode(true);
-
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-        }
 
         ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder);
 

@@ -55,8 +55,6 @@ public class GridAffinityProcessorMemoryLeakTest extends GridCommonAbstractTest 
 
         TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
 
-        discoSpi.setForceServerMode(true);
-
         discoSpi.setIpFinder(ipFinder);
 
         cfg.setDiscoverySpi(discoSpi);

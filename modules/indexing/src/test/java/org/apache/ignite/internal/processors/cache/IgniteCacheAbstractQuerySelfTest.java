@@ -142,7 +142,7 @@ public abstract class IgniteCacheAbstractQuerySelfTest extends GridCommonAbstrac
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration c = super.getConfiguration(igniteInstanceName);
 
-        c.setDiscoverySpi(new TcpDiscoverySpi().setForceServerMode(true).setIpFinder(ipFinder));
+        c.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
 
         if (igniteInstanceName.startsWith("client")) {
             c.setClientMode(true);

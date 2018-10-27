@@ -54,7 +54,7 @@ public class IgniteCacheNearLockValueSelfTest extends GridCommonAbstractTest {
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        cfg.setDiscoverySpi(new TcpDiscoverySpi().setForceServerMode(true).setIpFinder(IP_FINDER));
+        cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(IP_FINDER));
 
         if (getTestIgniteInstanceName(0).equals(igniteInstanceName))
             cfg.setClientMode(true);

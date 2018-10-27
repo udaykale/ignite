@@ -44,8 +44,6 @@ public class CacheContinuousBatchForceServerModeAckTest extends CacheContinuousB
 
             TcpDiscoverySpi disco = new TcpDiscoverySpi();
 
-            disco.setForceServerMode(true);
-
             disco.setIpFinder(IP_FINDER);
 
             cfg.setDiscoverySpi(disco);

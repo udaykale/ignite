@@ -100,8 +100,6 @@ public class IgniteCacheClientReconnectTest extends GridCommonAbstractTest {
 
             cfg.setCacheConfiguration(ccfgs);
         }
-        else
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(forceServerMode);
 
         cfg.setClientMode(client);
 

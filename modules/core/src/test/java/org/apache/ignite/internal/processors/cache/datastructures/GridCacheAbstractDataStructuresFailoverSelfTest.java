@@ -150,10 +150,8 @@ public abstract class GridCacheAbstractDataStructuresFailoverSelfTest extends Ig
 
         cfg.setCacheConfiguration(ccfg);
 
-        if (client) {
+        if (client)
             cfg.setClientMode(client);
-            ((TcpDiscoverySpi)(cfg.getDiscoverySpi())).setForceServerMode(true);
-        }
 
         return cfg;
     }

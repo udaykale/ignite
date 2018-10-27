@@ -60,10 +60,8 @@ public class IgniteTopologyPrintFormatSelfTest extends GridCommonAbstractTest {
         if (igniteInstanceName.endsWith("client"))
             cfg.setClientMode(true);
 
-        if (igniteInstanceName.endsWith("client_force_server")) {
+        if (igniteInstanceName.endsWith("client_force_server"))
             cfg.setClientMode(true);
-            disc.setForceServerMode(true);
-        }
 
         cfg.setDiscoverySpi(disc);
 

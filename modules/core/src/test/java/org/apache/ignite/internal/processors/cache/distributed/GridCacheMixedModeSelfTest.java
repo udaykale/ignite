@@ -33,8 +33,6 @@ public class GridCacheMixedModeSelfTest extends GridCommonAbstractTest {
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
         cfg.setCacheConfiguration(cacheConfiguration(igniteInstanceName));
 
         if (F.eq(igniteInstanceName, getTestIgniteInstanceName(0)))

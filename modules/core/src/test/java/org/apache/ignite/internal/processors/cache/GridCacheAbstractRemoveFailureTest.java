@@ -96,7 +96,7 @@ public abstract class GridCacheAbstractRemoveFailureTest extends GridCommonAbstr
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(IP_FINDER).setForceServerMode(true);
+        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(IP_FINDER);
 
         if (testClientNode() && getTestIgniteInstanceName(0).equals(igniteInstanceName))
             cfg.setClientMode(true);

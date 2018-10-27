@@ -84,7 +84,7 @@ public class LruNearOnlyNearEvictionPolicySelfTest extends GridCommonAbstractTes
             c.setCacheConfiguration(cc);
         }
 
-        c.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder).setForceServerMode(true));
+        c.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
 
         cnt++;
 

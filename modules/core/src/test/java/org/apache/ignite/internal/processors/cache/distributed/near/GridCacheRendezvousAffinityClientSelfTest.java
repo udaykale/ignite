@@ -44,8 +44,6 @@ public class GridCacheRendezvousAffinityClientSelfTest extends GridCommonAbstrac
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
         CacheConfiguration ccfg = defaultCacheConfiguration();
 
         ccfg.setCacheMode(CacheMode.PARTITIONED);

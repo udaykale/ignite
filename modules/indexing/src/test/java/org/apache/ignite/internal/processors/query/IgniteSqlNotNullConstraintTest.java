@@ -115,7 +115,6 @@ public class IgniteSqlNotNullConstraintTest extends GridCommonAbstractTest {
         TcpDiscoverySpi disco = new TcpDiscoverySpi();
 
         disco.setIpFinder(IP_FINDER);
-        disco.setForceServerMode(true);
 
         c.setDiscoverySpi(disco);
 

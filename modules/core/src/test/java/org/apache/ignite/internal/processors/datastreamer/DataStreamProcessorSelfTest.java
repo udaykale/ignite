@@ -113,7 +113,6 @@ public class DataStreamProcessorSelfTest extends GridCommonAbstractTest {
 
         TcpDiscoverySpi spi = new TcpDiscoverySpi();
 
-        spi.setForceServerMode(true);
         spi.setIpFinder(ipFinder);
 
         cfg.setDiscoverySpi(spi);

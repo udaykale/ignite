@@ -118,8 +118,6 @@ public abstract class IgniteCacheAbstractStopBusySelfTest extends GridCommonAbst
 
         cfg.setCommunicationSpi(commSpi);
 
-        cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(finder).setForceServerMode(true));
-
         cfg.setCacheConfiguration(cacheCfg);
 
         return cfg;

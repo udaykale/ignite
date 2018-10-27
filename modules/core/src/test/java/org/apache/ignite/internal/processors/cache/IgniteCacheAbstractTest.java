@@ -87,7 +87,7 @@ public abstract class IgniteCacheAbstractTest extends GridCommonAbstractTest {
 
         ((TcpCommunicationSpi)cfg.getCommunicationSpi()).setSharedMemoryPort(-1);
 
-        TcpDiscoverySpi disco = new TcpDiscoverySpi().setForceServerMode(true);
+        TcpDiscoverySpi disco = new TcpDiscoverySpi();
 
         disco.setIpFinder(ipFinder);
 

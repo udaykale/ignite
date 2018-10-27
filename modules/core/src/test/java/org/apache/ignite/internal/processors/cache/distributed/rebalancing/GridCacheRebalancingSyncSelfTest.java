@@ -104,7 +104,6 @@ public class GridCacheRebalancingSyncSelfTest extends GridCommonAbstractTest {
         IgniteConfiguration iCfg = super.getConfiguration(igniteInstanceName);
 
         ((TcpDiscoverySpi)iCfg.getDiscoverySpi()).setIpFinder(ipFinder);
-        ((TcpDiscoverySpi)iCfg.getDiscoverySpi()).setForceServerMode(true);
 
         TcpCommunicationSpi commSpi = new CollectingCommunicationSpi();
 

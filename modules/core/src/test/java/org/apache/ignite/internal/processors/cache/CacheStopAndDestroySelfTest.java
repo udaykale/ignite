@@ -105,7 +105,6 @@ public class CacheStopAndDestroySelfTest extends GridCommonAbstractTest {
         }
 
         ((TcpDiscoverySpi)iCfg.getDiscoverySpi()).setIpFinder(ipFinder);
-        ((TcpDiscoverySpi)iCfg.getDiscoverySpi()).setForceServerMode(true);
 
         iCfg.setCacheConfiguration();
 

@@ -121,7 +121,7 @@ public abstract class ClusterGroupAbstractTest extends GridCommonAbstractTest im
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        cfg.setDiscoverySpi(new TcpDiscoverySpi().setForceServerMode(true).setIpFinder(ipFinder));
+        cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
 
         return cfg;
     }

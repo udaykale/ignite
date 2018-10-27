@@ -183,7 +183,6 @@ import static org.apache.ignite.IgniteSystemProperties.getBoolean;
  * <li>Thread priority for threads started by SPI (see {@link #setThreadPriority(int)})</li>
  * <li>IP finder clean frequency (see {@link #setIpFinderCleanFrequency(long)})</li>
  * <li>Statistics print frequency (see {@link #setStatisticsPrintFrequency(long)}</li>
- * <li>Force server mode (see {@link #setForceServerMode(boolean)}</li>
  * </ul>
  * <h2 class="header">Java Example</h2>
  * <pre name="code" class="java">
@@ -520,17 +519,17 @@ public class TcpDiscoverySpi extends IgniteSpiAdapter implements IgniteDiscovery
         return impl instanceof ClientImpl;
     }
 
-    /**
-     * If {@code true} TcpDiscoverySpi will started in server mode regardless
-     * of {@link IgniteConfiguration#isClientMode()}
-     *
-     * @return forceServerMode flag.
-     * @deprecated Will be removed at 3.0.
-     */
-    @Deprecated
-    public boolean isForceServerMode() {
-        return forceSrvMode;
-    }
+//    /**
+//     * If {@code true} TcpDiscoverySpi will started in server mode regardless
+//     * of {@link IgniteConfiguration#isClientMode()}
+//     *
+//     * @return forceServerMode flag.
+//     * @deprecated Will be removed at 3.0.
+//     */
+//    @Deprecated
+//    public boolean isForceServerMode() {
+//        return forceSrvMode;
+//    }
 
     /**
      * Sets force server mode flag.

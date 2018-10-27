@@ -120,8 +120,6 @@ public class GridCacheRebalancingOrderingTest extends GridCommonAbstractTest {
             cfg.setClientMode(true);
 
             assert cfg.getDiscoverySpi() instanceof TcpDiscoverySpi : cfg.getDiscoverySpi();
-
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
         }
         else
             cfg.setServiceConfiguration(getServiceConfiguration());

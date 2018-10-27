@@ -83,10 +83,7 @@ public class IgniteCacheManyClientsTest extends GridCommonAbstractTest {
         ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder);
         ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinderCleanFrequency(10 * 60_000);
         ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setJoinTimeout(2 * 60_000);
-
-        if (!clientDiscovery)
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
+        
         cfg.setClientMode(client);
 
         CacheConfiguration ccfg = new CacheConfiguration(DEFAULT_CACHE_NAME);

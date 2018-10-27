@@ -58,12 +58,8 @@ public abstract class IgniteClientDataStructuresAbstractTest extends GridCommonA
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
         IgniteConfiguration cfg = super.getConfiguration(igniteInstanceName);
 
-        if (igniteInstanceName.equals(getTestIgniteInstanceName(NODE_CNT - 1))) {
+        if (igniteInstanceName.equals(getTestIgniteInstanceName(NODE_CNT - 1)))
             cfg.setClientMode(true);
-
-            if (!clientDiscovery())
-                ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-        }
 
         ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setIpFinder(ipFinder);
 

@@ -201,8 +201,6 @@ public abstract class GridCacheAbstractFullApiSelfTest extends GridCacheAbstract
 
         ((TcpCommunicationSpi)cfg.getCommunicationSpi()).setSharedMemoryPort(-1);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
         int[] evtTypes = cfg.getIncludeEventTypes();
 
         if (evtTypes == null || evtTypes.length == 0)
@@ -5031,7 +5029,7 @@ public abstract class GridCacheAbstractFullApiSelfTest extends GridCacheAbstract
                 // If AssertionFailedError is in the chain, assume we need to wait and retry.
                 if (!X.hasCause(t, AssertionFailedError.class))
                     throw t;
-                
+
                 if (i == 9) {
                     for (int j = 0; j < gridCount(); j++)
                         executeOnLocalOrRemoteJvm(j, new PrintIteratorStateTask());

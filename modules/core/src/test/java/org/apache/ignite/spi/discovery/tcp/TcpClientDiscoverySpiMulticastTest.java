@@ -66,11 +66,8 @@ public class TcpClientDiscoverySpiMulticastTest extends GridCommonAbstractTest {
 
         client.set(null);
 
-        if (clientFlag != null && clientFlag) {
+        if (clientFlag != null && clientFlag)
             cfg.setClientMode(true);
-
-            spi.setForceServerMode(forceSrv);
-        }
         else {
             Integer port = discoPort.get();
 

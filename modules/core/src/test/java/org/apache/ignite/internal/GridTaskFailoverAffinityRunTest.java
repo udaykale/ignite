@@ -58,11 +58,8 @@ public class GridTaskFailoverAffinityRunTest extends GridCommonAbstractTest {
 
         boolean client = clientMode && igniteInstanceName.equals(getTestIgniteInstanceName(0));
 
-        if (client) {
+        if (client)
             cfg.setClientMode(true);
-
-            ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-        }
 
         CacheConfiguration ccfg = new CacheConfiguration(DEFAULT_CACHE_NAME);
 

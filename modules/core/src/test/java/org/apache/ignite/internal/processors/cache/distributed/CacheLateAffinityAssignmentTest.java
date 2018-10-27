@@ -159,7 +159,6 @@ public class CacheLateAffinityAssignmentTest extends GridCommonAbstractTest {
 
         TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
 
-        discoSpi.setForceServerMode(forceSrvMode);
         discoSpi.setIpFinder(ipFinder);
         discoSpi.setNetworkTimeout(60_000);
 

@@ -64,8 +64,6 @@ public class GridCacheReturnValueTransferSelfTest extends GridCommonAbstractTest
 
         cfg.setCacheConfiguration(ccfg);
 
-        ((TcpDiscoverySpi)cfg.getDiscoverySpi()).setForceServerMode(true);
-
         if (!cache)
             cfg.setClientMode(true);
 
